@@ -3,7 +3,16 @@ import { View, Text, TextInput, Button, FlatList } from "react-native";
 import { Badge, Icon } from "react-native-elements"
 
 class FlatListItem extends Component {
+  constructor(){
+    super()
+    this.state = {
+      getKey: null
+    }
+  }
   render() {
+    // const dataMain = this.props.dataFromMain
+    console.log('KEY: ', this.state.getKey)
+    console.log('MAIN: ', this.props.dataFromMain)
     return (
       <View style={{
         backgroundColor: "aliceblue",
@@ -31,7 +40,15 @@ class FlatListItem extends Component {
         <View style={{
           flex: 3
         }}>
-          <Button title="OK!"></Button>
+          <Button title="OK!" onPress={() => {
+            this.setState(previousState => {
+              return {
+                getKey: this.props.index
+              }
+            })
+            this.props.dataFromMain.splice(this.state.getKey, 1)
+            console.log("OK")
+          }}></Button>
         </View>
       </View>
     )
@@ -48,7 +65,7 @@ export default class Main extends Component {
       data: [],
       error: ""
     }
-    this.handleTextInput = this.handleTextInput.bind(this)
+    this.handleTextInput = this.handleTextInput.bind(this) //Dòng này nữa
   }
 
   submit = () => {
@@ -64,6 +81,11 @@ export default class Main extends Component {
         return { data: [...state.data, this.state.dataItem] }
       })
       this.textInput.clear()
+      this.setState(state => {
+        return {
+          dataItem: null
+        }
+      })
     }
   }
 
@@ -78,9 +100,7 @@ export default class Main extends Component {
     })
   }
   render() {
-    console.log(this.state)
-    console.log("ITEM: ", this.state.dataItem)
-    console.log("ERROR: ", this.state.error);
+
 
     const { name } = this.state
     return (
@@ -91,16 +111,18 @@ export default class Main extends Component {
         }}>
           <View>
             <TextInput style={{ backgroundColor: "white", height: 30, padding: 10 }}
-              ref={input => { this.textInput = input }}
+              ref={input => { this.textInput = input }} //Dòng này
               onChangeText={this.handleTextInput}
               placeholder="Add new data"
             />
           </View>
-          <View style={{ marginTop: 10 }}>
-            <Button title="Thêm" onPress={this.submit}></Button>
+          <View style={{ marginTop: 10 }}>         
+            {/* /* Check nếu dataItem == null thì button == disabled */ }
+            <Button title={"Thêm"} onPress={this.submit} disabled={this.state.dataItem === null}></Button> 
+            {/* Dòng trên */}
           </View>
           {
-            (this.state.dataItem === null ) && <View style={{
+            this.state.dataItem === null && <View style={{
               backgroundColor: "red",
               marginTop: 10,
               borderRadius: 3
@@ -132,11 +154,12 @@ export default class Main extends Component {
             data={this.state.data}
             renderItem={({ item, index }) => {
               return (
-                <FlatListItem item={item} index={index} />
+                <FlatListItem dataFromMain = {this.state.data} item={item} index={index} />
               )
             }}
           >
           </FlatList>
+          <Button title="TEST" onPress={this.DoneItem}></Button>
         </View>
       </View>
 
