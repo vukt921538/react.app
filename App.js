@@ -1,18 +1,36 @@
 import React, { Component } from "react";
-import { View, Text, TextInput, Button, FlatList } from "react-native";
+import { View, Text, TextInput, Button, FlatList, StyleSheet } from "react-native";
 import { Badge, Icon } from "react-native-elements"
 
 class FlatListItem extends Component {
-  constructor(){
-    super()
+  constructor(props) {
+    super(props)
+
     this.state = {
-      getKey: null
+      getItem: this.props.item
     }
   }
+  onClick = () => {
+    this.setState(state => ({
+      getItem: {
+        ...state.getItem,
+        isDone: !this.state.getItem.isDone
+      }
+    }))
+
+  }
   render() {
-    // const dataMain = this.props.dataFromMain
-    console.log('KEY: ', this.state.getKey)
-    console.log('MAIN: ', this.props.dataFromMain)
+    const styles = StyleSheet.create({
+      text: {
+        color: "black",
+        fontWeight: "500",
+        textAlign: "center",
+      },
+      activeLineThrough: {
+        textDecorationLine: "line-through"
+      } 
+    })
+    console.log("Style: ", styles.text.color)
     return (
       <View style={{
         backgroundColor: "aliceblue",
@@ -30,25 +48,19 @@ class FlatListItem extends Component {
         <View style={{
           flex: 7
         }}>
-          <Text style={{
-            color: "black",
-            fontWeight: "500",
-            textAlign: "center"
-          }}>
-            {this.props.item.value}</Text>
+          {
+            <Text style={[styles.text, this.state.getItem.isDone && styles.activeLineThrough]}>
+              {this.props.item.value}</Text>
+          }
         </View>
         <View style={{
-          flex: 3
+          flex: 4
         }}>
-          <Button title="OK!" onPress={() => {
-            this.setState(previousState => {
-              return {
-                getKey: this.props.index
-              }
-            })
-            this.props.dataFromMain.splice(this.state.getKey, 1)
-            console.log("OK")
-          }}></Button>
+          <Button
+            title={this.state.getItem.isDone ? "DONE!" : "OK"}
+            onPress={this.onClick}
+            color={this.state.getItem.isDone ? "" : "#f194ff"}
+          ></Button>
         </View>
       </View>
     )
@@ -116,9 +128,9 @@ export default class Main extends Component {
               placeholder="Add new data"
             />
           </View>
-          <View style={{ marginTop: 10 }}>         
-            {/* /* Check nếu dataItem == null thì button == disabled */ }
-            <Button title={"Thêm"} onPress={this.submit} disabled={this.state.dataItem === null}></Button> 
+          <View style={{ marginTop: 10 }}>
+            {/* /* Check nếu dataItem == null thì button == disabled */}
+            <Button title={"Thêm"} onPress={this.submit} disabled={this.state.dataItem === null}></Button>
             {/* Dòng trên */}
           </View>
           {
@@ -154,12 +166,11 @@ export default class Main extends Component {
             data={this.state.data}
             renderItem={({ item, index }) => {
               return (
-                <FlatListItem dataFromMain = {this.state.data} item={item} index={index} />
+                <FlatListItem dataFromMain={this.state.data} item={item} index={index} />
               )
             }}
           >
           </FlatList>
-          <Button title="TEST" onPress={this.DoneItem}></Button>
         </View>
       </View>
 
